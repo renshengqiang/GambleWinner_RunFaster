@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 namespace RunFaster
 {
@@ -17,6 +17,8 @@ namespace RunFaster
     {
         public const int MIN = 3;
         public const int MAX = 16;
+        public const int A = 15;
+        public const int TWO = 14;
         public int number;          // 牌的数值（3:3, ..., J:11, Q: 12, K:13, A: 14:, 2: 15, Joker: 16)
         public PokeColor color;     // 花色
 
@@ -115,8 +117,153 @@ namespace RunFaster
     public enum PokeCmbType
     {
         SINGLE = 1,         // 单支
-        COUPLE,             // 对子
-        
+        STRAIGHT,           // 顺子
+        FLUSH_STRAIGHT,     // 同花顺
+        PAIR,               // 对子
+        STRAIGHT_PAIR,      // 连对
+        TRIP,               // 三个
+        STRIGHT_TRIP,       // 三顺
+        TRIP_PAIR,          // 三带二
+        QUADS,              // 炸弹
+        JOKER_QUADS         // 王炸
+    }
+
+    /// <summary>
+    /// 出牌的类型
+    /// </summary>
+    public struct PokeCardsType : IComparable<PokeCardsType>
+    {
+        public PokeCmbType type;        // 组合类型，一般而言同种组合类型才能比较大小
+        public Poke mainPoke;           // 主牌，连子之类的，这个就是首张牌
+        public int continuousNum;       // 连续牌数量
+
+        public int CompareTo(PokeCardsType other)
+        {
+            int ret = 0;
+
+            if(type == other.type)
+            {
+                #region EQUAL
+                switch (type)
+                {
+                    case PokeCmbType.SINGLE:
+                    case PokeCmbType.PAIR:
+                    case PokeCmbType.TRIP:
+                    case PokeCmbType.TRIP_PAIR:
+                        ret = mainPoke.CompareTo(other.mainPoke);
+                        break;
+                    case PokeCmbType.STRAIGHT:
+                    case PokeCmbType.FLUSH_STRAIGHT:
+                        // 如果是以A或者2开头，则需要另外进行单独处理
+                        // 否则直接比较顺子的第一个数字即可
+                        if(continuousNum == other.continuousNum)
+                        {
+                            if((mainPoke.number == Poke.A || mainPoke.number == Poke.TWO) &&
+                            (other.mainPoke.number != Poke.A && other.mainPoke.number != Poke.TWO))
+                            {
+                                ret = -1;
+                            }
+                            else if((other.mainPoke.number == Poke.A || other.mainPoke.number == Poke.TWO) &&
+                            (mainPoke.number != Poke.A && mainPoke.number != Poke.TWO))
+                            {
+                                ret = 1;
+                            }
+                            else
+                            {
+                                ret = mainPoke.CompareTo(other.mainPoke);
+                            }
+                        }
+                        else
+                        {
+                            ret = 0;
+                        }
+                        break;
+                    case PokeCmbType.STRAIGHT_PAIR:
+                    case PokeCmbType.STRIGHT_TRIP:
+                        if(continuousNum == other.continuousNum)
+                        {
+                            if(continuousNum > 2)
+                            {
+                                if((mainPoke.number == Poke.A || mainPoke.number == Poke.TWO) &&
+                                    (other.mainPoke.number != Poke.A && other.mainPoke.number != Poke.TWO))
+                                {
+                                    ret = -1;
+                                }
+                                else if ((other.mainPoke.number == Poke.A || other.mainPoke.number == Poke.TWO) &&
+                                    (mainPoke.number != Poke.A && mainPoke.number != Poke.TWO))
+                                {
+                                    ret = 1;
+                                }
+                                else
+                                {
+                                    ret = mainPoke.CompareTo(other.mainPoke);
+                                }
+                            }
+                            else
+                            {
+                                ret = mainPoke.CompareTo(other.mainPoke);
+                            }
+                        }
+                        else
+                        {
+                            ret = 0;
+                        }
+                        break;
+                    case PokeCmbType.QUADS:
+                        if(continuousNum != other.continuousNum)
+                        {
+                            ret = continuousNum.CompareTo(other.continuousNum);
+                        }
+                        else
+                        {
+                            ret = mainPoke.CompareTo(other.mainPoke);
+                        }
+                        break;
+                    default:
+                        ret = 0;
+                        break;
+                }
+                #endregion
+            }
+            else
+            {
+                #region TYPE_UNEQUAL
+                if (type == PokeCmbType.JOKER_QUADS)
+                {
+                    ret = 1;
+                }
+                else if(other.type == PokeCmbType.JOKER_QUADS)
+                {
+                    ret = -1;
+                }
+                else if(type == PokeCmbType.QUADS)
+                {
+                    ret = 1;
+                }
+                else if(other.type == PokeCmbType.QUADS)
+                {
+                    ret = -1;
+                }
+                else if(continuousNum == other.continuousNum &&
+                        type == PokeCmbType.FLUSH_STRAIGHT &&
+                        other.type == PokeCmbType.STRAIGHT)
+                {
+                    ret = 1;
+                }
+                else if(continuousNum == other.continuousNum &&
+                    other.type == PokeCmbType.FLUSH_STRAIGHT &&
+                    type == PokeCmbType.STRAIGHT)
+                {
+                    ret = -1;
+                }
+                else
+                {
+                    ret = 0;
+                }
+                #endregion
+            }
+            return ret;
+        }
     }
 
     public class Utils
@@ -149,6 +296,12 @@ namespace RunFaster
             }
             Debug.Log(string.Format("{0} {1}", poke.number, poke.color));
             return poke;
+        }
+
+        public static PokeCardsType GetPockCarsdType(List<Poke> lstPokes)
+        {
+            PokeCardsType ret = new PokeCardsType();
+            return ret;
         }
     }
 }
