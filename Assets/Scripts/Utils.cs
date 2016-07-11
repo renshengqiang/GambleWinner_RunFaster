@@ -125,6 +125,7 @@ namespace RunFaster
         TRIP,               // 三个
         STRIGHT_TRIP,       // 三顺
         TRIP_PAIR,          // 三带二
+        STRIGHT_TRIP_PAIR,  // 飞机
         QUADS,              // 炸弹
         JOKER_QUADS,        // 王炸
         ILLEGAL
@@ -182,6 +183,7 @@ namespace RunFaster
                         break;
                     case PokeCmbType.STRAIGHT_PAIR:
                     case PokeCmbType.STRIGHT_TRIP:
+                    case PokeCmbType.STRIGHT_TRIP_PAIR:
                         if(continuousNum == other.continuousNum)
                         {
                             if(continuousNum > 2)
@@ -306,9 +308,10 @@ namespace RunFaster
             PokeCardsType ret = new PokeCardsType();
             int[] pokeCounts = new int[CARDS_NUM+3];        // 多出三个，因为点数从3开始
             int[] pokeTypeCounts = new int[9];              // 最多只能是8张连续相同的
-            int maxSamePoke = 0;                            // 相同大小牌的最多数量
-            int maxSamePos = 0;                             // 数量最多的牌的开始下标
+            int maxSamePoke = 0;                            // 相同大小牌的最多数量（三代两就是3， 对子就是2等等）
+            int maxSamePos = 0;                             // 数量最多的牌的开始下标(最小数组的牌的下标)
             bool continues = true;                          // 这些牌是否是连续的
+            bool crossA23 = false;                          // 如果是连子或者连对等，是否跨越了A23，这种情况需要单独处理
 
             for (int i = 0; i < lstPokes.Count; ++i)
             {
@@ -345,13 +348,28 @@ namespace RunFaster
                     maxSamePos = i;
                 }
             }
+            
 
             // 第四步，分析手牌是否是连续的
+            bool isStraightTripPair = false;
             int count = lstPokes.Count/maxSamePoke;
+
+            if (maxSamePoke == 3 &&
+                pokeTypeCounts[3] > 1 && 
+                pokeTypeCounts[2] == pokeTypeCounts[3])
+            {
+                count = lstPokes.Count / 5;
+                isStraightTripPair = true;
+            }
+
             int sum = 0;
             for(int i=0; i<count; ++i)
             {
                 sum += pokeCounts[(i + maxSamePos)%Poke.MAX];
+                if(isStraightTripPair)
+                {
+                    sum += 2;
+                }
             }
             if(sum == lstPokes.Count)
             {
@@ -366,6 +384,13 @@ namespace RunFaster
                 else
                 {
                     continues = true;
+
+                    if(pokeCounts[Poke.MIN] == maxSamePoke && 
+                   pokeCounts[Poke.MIN] == pokeCounts[Poke.A] &&
+                   pokeCounts[Poke.MIN] == pokeCounts[Poke.TWO])
+                    {
+                        crossA23 = true;
+                    }
                 }
             }
             else
@@ -397,13 +422,21 @@ namespace RunFaster
                         if(sameColor)
                         {
                             ret.type = PokeCmbType.FLUSH_STRAIGHT;
-                            
                         }
                         else
                         {
                             ret.type = PokeCmbType.STRAIGHT;
                         }
-                        ret.mainPoke = lstPokes[maxSamePos];
+
+                        if(crossA23)
+                        {
+                            ret.mainPoke = lstPokes[lstPokes.Count - 2];
+                        }
+                        else
+                        {
+                            ret.mainPoke = lstPokes[maxSamePos];
+                        }
+                        
                         ret.continuousNum = lstPokes.Count;
                     }
                     else
@@ -426,7 +459,14 @@ namespace RunFaster
                     else if (continues && lstPokes.Count >= 6)
                     {
                         ret.type = PokeCmbType.STRAIGHT_PAIR;
-                        ret.mainPoke = lstPokes[maxSamePos];            // todo: maxSamePos 有可能不是我们按照排序得到的位置
+                        if(crossA23)
+                        {
+                            ret.mainPoke = lstPokes[lstPokes.Count - 4];
+                        }
+                        else
+                        {
+                            ret.mainPoke = lstPokes[maxSamePos];
+                        }
                         ret.continuousNum = lstPokes.Count / 2;
                     }
                     else
@@ -447,18 +487,52 @@ namespace RunFaster
                         ret.type = PokeCmbType.TRIP_PAIR;
                         ret.mainPoke = lstPokes[maxSamePos];
                     }
-                    else if(continues && lstPokes.Count >= 6)
+                    else if(continues && lstPokes.Count >= 6 && 
+                        pokeTypeCounts[3]*3 == lstPokes.Count)
                     {
                         ret.type = PokeCmbType.STRIGHT_TRIP;
-                        ret.mainPoke = lstPokes[maxSamePos];
+                        if(crossA23)
+                        {
+                            ret.mainPoke = lstPokes[lstPokes.Count - 6]; // 即使对王存在也可以
+                        }
+                        else
+                        {
+                            ret.mainPoke = lstPokes[maxSamePos];
+                        }
                         ret.continuousNum = lstPokes.Count / 3;
                     }
-                    else if (lstPokes.Count % 5 == 0 && 
-                        pokeTypeCounts[2] == pokeTypeCounts[3])
+                    else if (continues && lstPokes.Count % 5 == 0 && 
+                        pokeTypeCounts[2] == pokeTypeCounts[3] &&
+                        pokeTypeCounts[2] * 5 == lstPokes.Count)
                     {
-                        // todo:
+                        ret.type = PokeCmbType.STRIGHT_TRIP_PAIR;
+                        if (crossA23)
+                        {
+                            ret.mainPoke = lstPokes[lstPokes.Count - 6]; // 即使对王存在也可以(三张王怎么办， 加上王的数量)
+                        }
+                        else
+                        {
+                            ret.mainPoke = lstPokes[maxSamePos];
+                        }
+                        ret.continuousNum = lstPokes.Count / 5;         
                     }
                     #endregion
+                    break;
+                case 4:
+                case 5:
+                case 6:
+                case 7:
+                case 8:
+                    if(lstPokes.Count == maxSamePoke)
+                    {
+                        ret.type = PokeCmbType.QUADS;
+                        ret.mainPoke = lstPokes[maxSamePos];
+                        ret.continuousNum = maxSamePoke;
+                    }
+                    else
+                    {
+                        ret.type = PokeCmbType.ILLEGAL;
+                    }
                     break;
                 default:
                     ret.type = PokeCmbType.ILLEGAL;
