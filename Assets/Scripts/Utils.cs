@@ -303,12 +303,18 @@ namespace RunFaster
             return poke;
         }
 
-        public static PokeCardsType GetPokeCarsdType(List<Poke> lstPokes)
+        /// <summary>
+        /// 判断当前出的牌的类型
+        /// </summary>
+        /// <param name="lstPokes">当前的牌的序列</param>
+        /// <param name="isOnePeckOfCards">是否是一副牌</param>
+        /// <returns></returns>
+        public static PokeCardsType GetPokeCarsdType(List<Poke> lstPokes, bool isOnePeckOfCards = true)
         {
             PokeCardsType ret = new PokeCardsType();
             int[] pokeCounts = new int[CARDS_NUM+3];        // 多出三个，因为点数从3开始
             int[] pokeTypeCounts = new int[9];              // 最多只能是8张连续相同的
-            int maxSamePoke = 0;                            // 相同大小牌的最多数量（三代两就是3， 对子就是2等等）
+            int maxSamePokeNum = 0;                         // 相同大小牌的最多数量（三代两就是3， 对子就是2等等）
             int maxSamePos = 0;                             // 数量最多的牌的开始下标(最小数组的牌的下标)
             bool continues = true;                          // 这些牌是否是连续的
             bool crossA23 = false;                          // 如果是连子或者连对等，是否跨越了A23，这种情况需要单独处理
@@ -342,19 +348,18 @@ namespace RunFaster
             for (int i = 0; i < pokeCounts.Length; ++i )
             {
                 pokeTypeCounts[pokeCounts[i]]++;
-                if(pokeTypeCounts[pokeCounts[i]] > maxSamePoke)
+                if(pokeTypeCounts[pokeCounts[i]] > maxSamePokeNum)
                 {
-                    maxSamePoke = pokeTypeCounts[pokeCounts[i]];
+                    maxSamePokeNum = pokeTypeCounts[pokeCounts[i]];
                     maxSamePos = i;
                 }
             }
-            
 
             // 第四步，分析手牌是否是连续的
             bool isStraightTripPair = false;
-            int count = lstPokes.Count/maxSamePoke;
+            int count = lstPokes.Count/maxSamePokeNum;
 
-            if (maxSamePoke == 3 &&
+            if (maxSamePokeNum == 3 &&
                 pokeTypeCounts[3] > 1 && 
                 pokeTypeCounts[2] == pokeTypeCounts[3])
             {
@@ -374,7 +379,7 @@ namespace RunFaster
             if(sum == lstPokes.Count)
             {
                 // K, A, 2, 3 不算作是连续的
-                if(pokeCounts[Poke.MIN] == maxSamePoke && 
+                if(pokeCounts[Poke.MIN] == maxSamePokeNum && 
                    pokeCounts[Poke.MIN] == pokeCounts[Poke.K] &&
                    pokeCounts[Poke.MIN] == pokeCounts[Poke.A] &&
                    pokeCounts[Poke.MIN] == pokeCounts[Poke.TWO])
@@ -385,7 +390,7 @@ namespace RunFaster
                 {
                     continues = true;
 
-                    if(pokeCounts[Poke.MIN] == maxSamePoke && 
+                    if(pokeCounts[Poke.MIN] == maxSamePokeNum && 
                    pokeCounts[Poke.MIN] == pokeCounts[Poke.A] &&
                    pokeCounts[Poke.MIN] == pokeCounts[Poke.TWO])
                     {
@@ -398,7 +403,7 @@ namespace RunFaster
                 continues = false;
             }
 
-            switch(maxSamePoke)
+            switch(maxSamePokeNum)
             {
                 case 1:
                     #region CASE1
@@ -453,7 +458,19 @@ namespace RunFaster
                     }
                     else if(lstPokes.Count == 2)
                     {
-                        ret.type = PokeCmbType.PAIR;
+                        if (maxSamePos == Poke.MAX && isOnePeckOfCards)
+                        {
+                            ret.type = PokeCmbType.JOKER_QUADS;
+                        }
+                        else if(maxSamePos == Poke.MAX && lstPokes[0].color != lstPokes[1].color)
+                        {
+                            ret.type = PokeCmbType.ILLEGAL;
+                        }
+                        else
+                        {
+                            ret.type = PokeCmbType.PAIR;
+                        }
+                        
                         ret.mainPoke = lstPokes[0];
                     }
                     else if (continues && lstPokes.Count >= 6)
@@ -519,20 +536,39 @@ namespace RunFaster
                     #endregion
                     break;
                 case 4:
-                case 5:
-                case 6:
-                case 7:
-                case 8:
-                    if(lstPokes.Count == maxSamePoke)
+                    #region CASE4
+                    if (maxSamePos == Poke.MAX)
+                    {
+                        ret.type = PokeCmbType.JOKER_QUADS;
+                    }
+                    else if(lstPokes.Count == maxSamePokeNum)
                     {
                         ret.type = PokeCmbType.QUADS;
                         ret.mainPoke = lstPokes[maxSamePos];
-                        ret.continuousNum = maxSamePoke;
+                        ret.continuousNum = maxSamePokeNum;
                     }
                     else
                     {
                         ret.type = PokeCmbType.ILLEGAL;
                     }
+                    #endregion
+                    break;
+                case 5:
+                case 6:
+                case 7:
+                case 8:
+                    #region CASE5-8
+                    if (lstPokes.Count == maxSamePokeNum)
+                    {
+                        ret.type = PokeCmbType.QUADS;
+                        ret.mainPoke = lstPokes[maxSamePos];
+                        ret.continuousNum = maxSamePokeNum;
+                    }
+                    else
+                    {
+                        ret.type = PokeCmbType.ILLEGAL;
+                    }
+                    #endregion
                     break;
                 default:
                     ret.type = PokeCmbType.ILLEGAL;
