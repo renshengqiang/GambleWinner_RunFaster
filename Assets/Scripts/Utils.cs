@@ -110,6 +110,59 @@ namespace RunFaster
             }
             return string.Format("({0} {1})", numStr, colorStr);
         }
+
+        public Poke(string number, PokeColor color)
+        {
+            switch(number)
+            {
+                case "3":
+                    this.number = 3;
+                    break;
+                case "4":
+                    this.number = 4;
+                    break;
+                case "5":
+                    this.number = 5;
+                    break;
+                case "6":
+                    this.number = 6;
+                    break;
+                case "7":
+                    this.number = 7;
+                    break;
+                case "8":
+                    this.number = 8;
+                    break;
+                case "9":
+                    this.number = 9;
+                    break;
+                case "10":
+                    this.number = 10;
+                    break;
+                case "J":
+                    this.number = 11;
+                    break;
+                case "Q":
+                    this.number = 12;
+                    break;
+                case "K":
+                    this.number = 13;
+                    break;
+                case "A":
+                    this.number = 14;
+                    break;
+                case "2":
+                    this.number = 15;
+                    break;
+                case "JO":
+                    this.number = 16;
+                    break;
+                default:
+                    this.number = 0;
+                    break;
+            }
+            this.color = color;
+        }
     }
 
     /// <summary>
@@ -268,6 +321,53 @@ namespace RunFaster
             }
             return ret;
         }
+
+        public override string ToString()
+        {
+            string ret = string.Empty;
+            switch(type)
+            {
+                case PokeCmbType.SINGLE:
+                    ret = "单只";
+                    break;
+                case PokeCmbType.STRAIGHT:
+                    ret = "连子";
+                    break;
+                case PokeCmbType.FLUSH_STRAIGHT:
+                    ret = "同花顺";
+                    break;
+                case PokeCmbType.PAIR:
+                    ret = "对子";
+                    break;
+                case PokeCmbType.STRAIGHT_PAIR:
+                    ret = "连对";
+                    break;
+                case PokeCmbType.TRIP:
+                    ret = "三支";
+                    break;
+                case PokeCmbType.STRIGHT_TRIP:
+                    ret = "三连";
+                    break;
+                case PokeCmbType.TRIP_PAIR:
+                    ret = "三带二";
+                    break;
+                case PokeCmbType.STRIGHT_TRIP_PAIR:
+                    ret = "飞机";
+                    break;
+                case PokeCmbType.QUADS:
+                    ret = "炸弹";
+                    break;
+                case PokeCmbType.JOKER_QUADS:
+                    ret = "王炸";
+                    break;
+                default:
+                    ret = "错误";
+                    break;
+            }
+
+            ret = string.Format("{0} {1} {2}", ret, mainPoke.ToString(), continuousNum);
+            return ret;
+        }
     }
 
     public class Utils
@@ -301,6 +401,25 @@ namespace RunFaster
             }
             Debug.Log(string.Format("{0} {1}", poke.number, poke.color));
             return poke;
+        }
+
+        public static List<Poke> GeneratePokeList(string[] lstNumber, PokeColor[] lstColor)
+        {
+            List<Poke> lstRet = new List<Poke>();
+
+            if(lstNumber.Length != lstColor.Length)
+            {
+                Debug.LogError(string.Format("number Count: {0} color Count: {1}", lstNumber.Length, lstColor.Length));
+            }
+            else
+            {
+                for(int i=0; i<lstNumber.Length; ++i)
+                {
+                    Poke poke = new Poke(lstNumber[i], lstColor[i]);
+                    lstRet.Add(poke);
+                }
+            }
+            return lstRet;
         }
 
         /// <summary>
