@@ -6,6 +6,7 @@ public class Testers : MonoBehaviour {
 
     public bool testCompareFunc = false;
     public bool testCardType = false;
+    public bool testCardTypeComp = false;
 
 	// Use this for initialization
 	void Start () {
@@ -16,6 +17,10 @@ public class Testers : MonoBehaviour {
         if(testCardType)
         {
             TestCardType();
+        }
+        if(testCardTypeComp)
+        {
+            TestCardTypeCompare();
         }
 	}
 
@@ -289,5 +294,10 @@ public class Testers : MonoBehaviour {
         {
             Debug.LogError("非飞机判断失败");
         }
+    }
+
+    private void TestCardTypeCompare()
+    {
+
     }
 }
