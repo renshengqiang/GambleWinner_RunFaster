@@ -140,5 +140,154 @@ public class Testers : MonoBehaviour {
         List<Poke> lstPoke14 = Utils.GeneratePokeList(card14, colors14);
         PokeCardsType type14 = Utils.GetPokeCarsdType(lstPoke14);
         Debug.Log("type14: " + type14.ToString());
+
+        // 飞机
+        string[] card15 = new string[] { "10", "9", "10", "9", "9", "10", "JO", "JO", "JO", "JO" };
+        PokeColor[] colors15 = new PokeColor[] { PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB, PokeColor.BLACK, PokeColor.BLACK, PokeColor.RED, PokeColor.RED };
+        List<Poke> lstPoke15 = Utils.GeneratePokeList(card15, colors15);
+        PokeCardsType type15 = Utils.GetPokeCarsdType(lstPoke15);
+        Debug.Log("type15: " + type15.ToString());
+
+        // 连对
+        string[] card22 = new string[] { "3", "2", "A", "A", "2", "3" };
+        PokeColor[] colors22 = new PokeColor[] { PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB };
+        List<Poke> lstPoke22 = Utils.GeneratePokeList(card22, colors22);
+        PokeCardsType type22 = Utils.GetPokeCarsdType(lstPoke22);
+        Debug.Log("type22: " + type22.ToString());
+
+        // 三连对
+        string[] card23 = new string[] { "3", "2", "2", "3", "2", "3" };
+        PokeColor[] colors23 = new PokeColor[] { PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB };
+        List<Poke> lstPoke23 = Utils.GeneratePokeList(card23, colors23);
+        PokeCardsType type23 = Utils.GetPokeCarsdType(lstPoke23);
+        Debug.Log("type23: " + type23.ToString());
+
+        // 三连
+        string[] card24 = new string[] { "3", "2", "2", "3", "2", "3", "A", "A", "A" };
+        PokeColor[] colors24 = new PokeColor[] { PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB };
+        List<Poke> lstPoke24 = Utils.GeneratePokeList(card24, colors24);
+        PokeCardsType type24 = Utils.GetPokeCarsdType(lstPoke24);
+        Debug.Log("type24: " + type24.ToString());
+
+        // 下面是应该判断错误的情况，如若出现报错说明有bug
+        // 三条王
+        string[] card16 = new string[] { "JO", "JO", "JO" };
+        PokeColor[] colors16 = new PokeColor[] { PokeColor.BLACK, PokeColor.BLACK, PokeColor.RED };
+        List<Poke> lstPoke16 = Utils.GeneratePokeList(card16, colors16);
+        PokeCardsType type16 = Utils.GetPokeCarsdType(lstPoke16);
+        if(type16.type != PokeCmbType.ILLEGAL)
+        {
+            Debug.LogError("三条王判断失败");
+        }
+
+        // 三带二
+        string[] card17 = new string[] { "JO", "4", "4", "JO", "JO" };
+        PokeColor[] colors17 = new PokeColor[] { PokeColor.RED, PokeColor.HEART, PokeColor.DIAMOND, PokeColor.BLACK, PokeColor.BLACK };
+        List<Poke> lstPoke17 = Utils.GeneratePokeList(card17, colors17);
+        PokeCardsType type17 = Utils.GetPokeCarsdType(lstPoke17);
+        if (type17.type != PokeCmbType.ILLEGAL)
+        {
+            Debug.LogError("三条王判断失败");
+        }
+
+        // 单支
+        string[] card18 = new string[] { "3", "5"};
+        PokeColor[] colors18 = new PokeColor[] { PokeColor.HEART, PokeColor.DIAMOND};
+        List<Poke> lstPoke18 = Utils.GeneratePokeList(card18, colors18);
+        PokeCardsType type18 = Utils.GetPokeCarsdType(lstPoke18);
+        if (type18.type != PokeCmbType.ILLEGAL)
+        {
+            Debug.LogError("非单支判断失败");
+        }
+
+        // 对子
+        string[] card19 = new string[] { "8", "8", "J"};
+        PokeColor[] colors19 = new PokeColor[] { PokeColor.CLUB, PokeColor.HEART, PokeColor.HEART };
+        List<Poke> lstPoke19 = Utils.GeneratePokeList(card19, colors19);
+        PokeCardsType type19 = Utils.GetPokeCarsdType(lstPoke19);
+        if (type19.type != PokeCmbType.ILLEGAL)
+        {
+            Debug.LogError("非单支判断失败");
+        }
+
+        // 三条
+        string[] card20 = new string[] { "10", "10", "10" , "J", "Q"};
+        PokeColor[] colors20 = new PokeColor[] { PokeColor.CLUB, PokeColor.HEART, PokeColor.DIAMOND, PokeColor.HEART, PokeColor.DIAMOND };
+        List<Poke> lstPoke20 = Utils.GeneratePokeList(card20, colors20);
+        PokeCardsType type20 = Utils.GetPokeCarsdType(lstPoke20);
+        if (type20.type != PokeCmbType.ILLEGAL)
+        {
+            Debug.LogError("非三条判断失败");
+        }
+
+        // 连子(带2)
+        string[] card21 = new string[] { "3", "4", "K", "A", "2" };
+        PokeColor[] colors21 = new PokeColor[] { PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB };
+        List<Poke> lstPoke21 = Utils.GeneratePokeList(card21, colors21);
+        PokeCardsType type21 = Utils.GetPokeCarsdType(lstPoke21);
+        if (type21.type != PokeCmbType.ILLEGAL)
+        {
+            Debug.LogError("非连子判断失败");
+        }
+
+        // 连对
+        string[] card25 = new string[] { "3", "2", "A", "A", "2", "3", "K", "K"};
+        PokeColor[] colors25 = new PokeColor[] { PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB };
+        List<Poke> lstPoke25 = Utils.GeneratePokeList(card25, colors25);
+        PokeCardsType type25 = Utils.GetPokeCarsdType(lstPoke25);
+        if (type25.type != PokeCmbType.ILLEGAL)
+        {
+            Debug.LogError("非连对判断失败");
+        }
+
+        // 三连
+        string[] card26 = new string[] { "3", "2", "2", "3", "2", "3", "A", "A", "A", "K", "K", "K" };
+        PokeColor[] colors26 = new PokeColor[] { PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB };
+        List<Poke> lstPoke26 = Utils.GeneratePokeList(card26, colors26);
+        PokeCardsType type26 = Utils.GetPokeCarsdType(lstPoke26);
+        if (type26.type != PokeCmbType.ILLEGAL)
+        {
+            Debug.LogError("非三连判断失败");
+        }
+
+        // 炸弹
+        string[] card27 = new string[] { "Q", "Q", "Q", "Q", "K"};
+        PokeColor[] colors27 = new PokeColor[] { PokeColor.CLUB, PokeColor.HEART, PokeColor.DIAMOND, PokeColor.SPADE, PokeColor.SPADE };
+        List<Poke> lstPoke27 = Utils.GeneratePokeList(card27, colors27);
+        PokeCardsType type27 = Utils.GetPokeCarsdType(lstPoke27);
+        if (type27.type != PokeCmbType.ILLEGAL)
+        {
+            Debug.LogError("非炸弹判断失败");
+        }
+
+        // 王炸
+        string[] card28 = new string[] { "JO", "JO", "K", "K"};
+        PokeColor[] colors28 = new PokeColor[] { PokeColor.BLACK, PokeColor.RED, PokeColor.CLUB, PokeColor.CLUB };
+        List<Poke> lstPoke28 = Utils.GeneratePokeList(card28, colors28);
+        PokeCardsType type28 = Utils.GetPokeCarsdType(lstPoke28);
+        if (type28.type != PokeCmbType.ILLEGAL)
+        {
+            Debug.LogError("非王炸判断失败");
+        }
+
+        // 王炸
+        string[] card29 = new string[] { "JO", "JO", "JO", "JO", "K", "K" };
+        PokeColor[] colors29 = new PokeColor[] { PokeColor.BLACK, PokeColor.RED, PokeColor.BLACK, PokeColor.RED, PokeColor.CLUB, PokeColor.CLUB };
+        List<Poke> lstPoke29 = Utils.GeneratePokeList(card29, colors29);
+        PokeCardsType type29 = Utils.GetPokeCarsdType(lstPoke29);
+        if (type29.type != PokeCmbType.ILLEGAL)
+        {
+            Debug.LogError("非王炸判断失败");
+        }
+
+        // 飞机
+        string[] card30 = new string[] { "J", "9", "J", "9", "9", "J", "JO", "JO", "JO", "JO" };
+        PokeColor[] colors30 = new PokeColor[] { PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB, PokeColor.BLACK, PokeColor.BLACK, PokeColor.RED, PokeColor.RED };
+        List<Poke> lstPoke30 = Utils.GeneratePokeList(card30, colors30);
+        PokeCardsType type30 = Utils.GetPokeCarsdType(lstPoke30);
+        if (type30.type != PokeCmbType.ILLEGAL)
+        {
+            Debug.LogError("非飞机判断失败");
+        }
     }
 }
