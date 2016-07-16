@@ -1,5 +1,4 @@
 clientProj/Library/*
-clientProj/ProjectSettings/*
 clientProj/Temp/*
 clientProj/*.csproj
 clientProj/*.sln
