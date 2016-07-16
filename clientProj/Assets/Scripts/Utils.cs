@@ -351,6 +351,7 @@ namespace RunFaster
         {
             return !(left == right);
         }
+
         public override string ToString()
         {
             string ret = string.Empty;
