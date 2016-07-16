@@ -322,6 +322,35 @@ namespace RunFaster
             return ret;
         }
 
+        public static bool operator > (PokeCardsType left, PokeCardsType right)
+        {
+            return left.CompareTo(right) > 0;
+        }
+
+        public static bool operator < (PokeCardsType left, PokeCardsType right)
+        {
+            return left.CompareTo(right) < 0;
+        }
+
+        public static bool operator >= (PokeCardsType left, PokeCardsType right)
+        {
+            return !(left<right);
+        }
+
+        public static bool operator <= (PokeCardsType left, PokeCardsType right)
+        {
+            return !(left>right);
+        }
+
+        public static bool operator == (PokeCardsType left, PokeCardsType right)
+        {
+            return left.CompareTo(right) == 0;
+        }
+
+        public static bool operator != (PokeCardsType left, PokeCardsType right)
+        {
+            return !(left == right);
+        }
         public override string ToString()
         {
             string ret = string.Empty;

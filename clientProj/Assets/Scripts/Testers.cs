@@ -298,6 +298,57 @@ public class Testers : MonoBehaviour {
 
     private void TestCardTypeCompare()
     {
+        // 相同类型的比较大小
+        string[] cardOne1 = new string[] { "A" };
+        PokeColor[] colorsOne1 = new PokeColor[] { PokeColor.CLUB };
+        List<Poke> lstPokeOne1 = Utils.GeneratePokeList(cardOne1, colorsOne1);
+        PokeCardsType typeOne1 = Utils.GetPokeCarsdType(lstPokeOne1);
 
+        string[] cardTwo1 = new string[] { "8" };
+        PokeColor[] colorsTwo1 = new PokeColor[] { PokeColor.CLUB };
+        List<Poke> lstPokeTwo1 = Utils.GeneratePokeList(cardTwo1, colorsTwo1);
+        PokeCardsType typeTwo1 = Utils.GetPokeCarsdType(lstPokeTwo1);
+
+        if(typeOne1.type == PokeCmbType.ILLEGAL || typeTwo1.type == PokeCmbType.ILLEGAL ||
+            typeOne1 <= typeTwo1)
+        {
+            Debug.LogError("相同类型比较失败");
+        }
+
+        // 相同类型的顺子比较
+        string[] cardOne2 = new string[] { "3", "5", "6", "4", "7" };
+        PokeColor[] colorsOne2 = new PokeColor[] { PokeColor.CLUB, PokeColor.DIAMOND, PokeColor.HEART, PokeColor.SPADE, PokeColor.CLUB };
+        List<Poke> lstPokeOne2 = Utils.GeneratePokeList(cardOne2, colorsOne2);
+        PokeCardsType typeOne2 = Utils.GetPokeCarsdType(lstPokeOne2);
+
+        string[] cardTwo2 = new string[] { "3", "5", "6", "2", "A" };
+        PokeColor[] colorsTwo2 = new PokeColor[] { PokeColor.CLUB, PokeColor.DIAMOND, PokeColor.HEART, PokeColor.SPADE, PokeColor.CLUB };
+        List<Poke> lstPokeTwo2 = Utils.GeneratePokeList(cardTwo2, colorsTwo2);
+        PokeCardsType typeTwo2 = Utils.GetPokeCarsdType(lstPokeTwo2);
+
+        if (typeOne2.type == PokeCmbType.ILLEGAL || typeTwo2.type == PokeCmbType.ILLEGAL ||
+            typeOne2 <= typeTwo2)
+        {
+            Debug.LogError("相同类型比较失败");
+        }
+
+        // 相同类型的顺子比较
+        string[] cardOne3 = new string[] { "3", "5", "6", "4", "7", "8" };
+        PokeColor[] colorsOne3 = new PokeColor[] { PokeColor.CLUB, PokeColor.DIAMOND, PokeColor.HEART, PokeColor.SPADE, PokeColor.CLUB, PokeColor.CLUB };
+        List<Poke> lstPokeOne3 = Utils.GeneratePokeList(cardOne3, colorsOne3);
+        PokeCardsType typeOne3 = Utils.GetPokeCarsdType(lstPokeOne3);
+
+        string[] cardTwo3 = new string[] { "3", "5", "6", "2", "A" };
+        PokeColor[] colorsTwo3 = new PokeColor[] { PokeColor.CLUB, PokeColor.DIAMOND, PokeColor.HEART, PokeColor.SPADE, PokeColor.CLUB };
+        List<Poke> lstPokeTwo3 = Utils.GeneratePokeList(cardTwo3, colorsTwo3);
+        PokeCardsType typeTwo3 = Utils.GetPokeCarsdType(lstPokeTwo3);
+
+        if (typeOne3.type == PokeCmbType.ILLEGAL || typeTwo3.type == PokeCmbType.ILLEGAL ||
+            typeOne3 != typeTwo3)
+        {
+            Debug.LogError("相同类型比较失败");
+        }
+
+        Debug.Log("所有测试用例都用过");
     }
 }

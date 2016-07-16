@@ -1,7 +1,7 @@
-Library/*
-ProjectSettings/*
-Temp/*
-*.csproj
-*.sln
-*.userprefs
-*.suo
+clientProj/Library/*
+clientProj/ProjectSettings/*
+client/Temp/*
+client/*.csproj
+client/*.sln
+client/*.userprefs
+client/*.suo
