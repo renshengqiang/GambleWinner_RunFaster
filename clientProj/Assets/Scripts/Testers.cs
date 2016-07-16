@@ -332,7 +332,7 @@ public class Testers : MonoBehaviour {
             Debug.LogError("相同类型比较失败");
         }
 
-        // 相同类型的顺子比较
+        // 不同类型的顺子比较
         string[] cardOne3 = new string[] { "3", "5", "6", "4", "7", "8" };
         PokeColor[] colorsOne3 = new PokeColor[] { PokeColor.CLUB, PokeColor.DIAMOND, PokeColor.HEART, PokeColor.SPADE, PokeColor.CLUB, PokeColor.CLUB };
         List<Poke> lstPokeOne3 = Utils.GeneratePokeList(cardOne3, colorsOne3);
@@ -347,6 +347,73 @@ public class Testers : MonoBehaviour {
             typeOne3 != typeTwo3)
         {
             Debug.LogError("相同类型比较失败");
+        }
+
+        // 同花顺比较
+        string[] cardOne4 = new string[] { "3", "5", "6", "4", "7"};
+        PokeColor[] colorsOne4 = new PokeColor[] { PokeColor.CLUB, PokeColor.DIAMOND, PokeColor.HEART, PokeColor.SPADE, PokeColor.CLUB };
+        List<Poke> lstPokeOne4 = Utils.GeneratePokeList(cardOne4, colorsOne4);
+        PokeCardsType typeOne4 = Utils.GetPokeCarsdType(lstPokeOne4);
+
+        string[] cardTwo4 = new string[] { "4", "5", "6", "2", "A" };
+        PokeColor[] colorsTwo4 = new PokeColor[] { PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB, PokeColor.CLUB };
+        List<Poke> lstPokeTwo4 = Utils.GeneratePokeList(cardTwo4, colorsTwo4);
+        PokeCardsType typeTwo4 = Utils.GetPokeCarsdType(lstPokeTwo4);
+
+        if (typeOne4.type == PokeCmbType.ILLEGAL || typeTwo4.type == PokeCmbType.ILLEGAL ||
+            typeOne4 >= typeTwo4)
+        {
+            Debug.LogError("相同类型比较失败");
+        }
+
+        // 和炸弹比较
+        string[] cardOne5 = new string[] { "3", "4", "6", "5", "7" };
+        PokeColor[] colorsOne5 = new PokeColor[] { PokeColor.CLUB, PokeColor.DIAMOND, PokeColor.HEART, PokeColor.SPADE, PokeColor.CLUB };
+        List<Poke> lstPokeOne5 = Utils.GeneratePokeList(cardOne5, colorsOne5);
+        PokeCardsType typeOne5 = Utils.GetPokeCarsdType(lstPokeOne5);
+
+        string[] cardTwo5 = new string[] { "5", "5", "5", "5"};
+        PokeColor[] colorsTwo5 = new PokeColor[] { PokeColor.CLUB, PokeColor.DIAMOND, PokeColor.HEART, PokeColor.SPADE };
+        List<Poke> lstPokeTwo5 = Utils.GeneratePokeList(cardTwo5, colorsTwo5);
+        PokeCardsType typeTwo5 = Utils.GetPokeCarsdType(lstPokeTwo5);
+
+        if (typeOne5.type == PokeCmbType.ILLEGAL || typeTwo5.type == PokeCmbType.ILLEGAL ||
+            typeOne5 >= typeTwo5)
+        {
+            Debug.LogError("和炸弹比较失败");
+        }
+
+        // 和王炸比较
+        string[] cardOne6 = new string[] { "3", "4", "6", "5", "7" };
+        PokeColor[] colorsOne6 = new PokeColor[] { PokeColor.CLUB, PokeColor.DIAMOND, PokeColor.HEART, PokeColor.SPADE, PokeColor.CLUB };
+        List<Poke> lstPokeOne6 = Utils.GeneratePokeList(cardOne6, colorsOne6);
+        PokeCardsType typeOne6 = Utils.GetPokeCarsdType(lstPokeOne6);
+
+        string[] cardTwo6 = new string[] { "JO", "JO"};
+        PokeColor[] colorsTwo6 = new PokeColor[] { PokeColor.BLACK, PokeColor.RED};
+        List<Poke> lstPokeTwo6 = Utils.GeneratePokeList(cardTwo6, colorsTwo6);
+        PokeCardsType typeTwo6 = Utils.GetPokeCarsdType(lstPokeTwo6);
+
+        if (typeOne6.type == PokeCmbType.ILLEGAL || typeTwo6.type == PokeCmbType.ILLEGAL ||
+            typeOne6 >= typeTwo6)
+        {
+            Debug.LogError("和炸弹比较失败");
+        }
+
+        // 和王炸比较
+        string[] cardOne7 = new string[] { "3", "4", "7", "5", "6" };
+        PokeColor[] colorsOne7 = new PokeColor[] { PokeColor.CLUB, PokeColor.DIAMOND, PokeColor.HEART, PokeColor.SPADE, PokeColor.CLUB };
+        List<Poke> lstPokeOne7 = Utils.GeneratePokeList(cardOne7, colorsOne7);
+        PokeCardsType typeOne7 = Utils.GetPokeCarsdType(lstPokeOne7);
+
+        string[] cardTwo7 = new string[] { "JO", "JO" };
+        PokeColor[] colorsTwo7 = new PokeColor[] { PokeColor.BLACK, PokeColor.RED };
+        List<Poke> lstPokeTwo7 = Utils.GeneratePokeList(cardTwo7, colorsTwo7);
+        PokeCardsType typeTwo7 = Utils.GetPokeCarsdType(lstPokeTwo7, false);
+
+        if (typeOne7.type == PokeCmbType.ILLEGAL || typeTwo7.type != PokeCmbType.ILLEGAL)
+        {
+            Debug.LogError("和炸弹比较失败");
         }
 
         Debug.Log("所有测试用例都用过");
