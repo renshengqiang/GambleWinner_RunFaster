@@ -116,4 +116,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   testCompareFunc: 0
   testCardType: 0
-  testCardTypeComp: 1
+  testCardTypeComp: 0
+  testTimer: 1

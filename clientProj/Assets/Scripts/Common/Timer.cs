@@ -111,7 +111,7 @@ namespace Common
                 }
                 if(obj.CanDestroy())
                 {
-                    lstTimerToRemove.Remove(obj.Id);
+                    lstTimerToRemove.Add(obj.Id);
                 }
             }
         }
@@ -135,6 +135,7 @@ namespace Common
             this.id = id;
             this.interval = interval;
             this.startTime = startTime;
+            this.repeatTimes = 1;
             this.handler = handler;
             this.param = param;
             this.excuteTimeSinceLastCbk = 0;
@@ -174,7 +175,8 @@ namespace Common
 
         public void AddTime(float time)
         {
-            if(Mathf.Abs(startTime - time) > Mathf.Epsilon)
+            if(startTime > Mathf.Epsilon && 
+               Mathf.Abs(startTime - time) > Mathf.Epsilon)
             {
                 startTime -= time;
             }
@@ -198,13 +200,14 @@ namespace Common
         {
             if(CanExecute())
             {
+                repeatTimes--;
+                excuteTimeSinceLastCbk -= interval;
+
                 if(handler != null)
                 {
                     handler(param);
                 }
 
-                repeatTimes--;
-                excuteTimeSinceLastCbk -= interval;
             }
         }
     }

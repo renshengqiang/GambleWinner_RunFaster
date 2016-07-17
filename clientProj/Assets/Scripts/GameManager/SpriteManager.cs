@@ -7,25 +7,25 @@ namespace Common
     {
         PokeSpriteSelector pokeSpriteSelector;
 
-        public override void Init()
-        {
-            GameObject go = ResourceManager.GetInstance().GetResouce("PokeSpriteSelector");
-            if(go != null)
-            {
-                pokeSpriteSelector = go.GetComponent<PokeSpriteSelector>();
-                if(pokeSpriteSelector == null)
-                {
-                    Logger.Error("SpriteManager Init error( get component error)");
-                }
-            }
-            else
-            {
-                Logger.Error("SpriteManager Init error( load reource error)");
-            }
-        }
-
         public Sprite GetSprite(Poke poke)
         {
+            if( null == pokeSpriteSelector)
+            {
+                GameObject go = ResourceManager.GetInstance().GetResouce("PokeSpriteSelector");
+                if (go != null)
+                {
+                    pokeSpriteSelector = go.GetComponent<PokeSpriteSelector>();
+                    if (pokeSpriteSelector == null)
+                    {
+                        Logger.Error("SpriteManager Init error( get component error)");
+                    }
+                }
+                else
+                {
+                    Logger.Error("SpriteManager Init error( load reource error)");
+                }
+            }
+
             int index = 0;
 
             if (poke.color == PokeColor.BLACK)

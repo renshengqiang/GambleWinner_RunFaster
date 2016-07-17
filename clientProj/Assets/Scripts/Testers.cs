@@ -1,12 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using RunFaster;
+using Common;
 
 public class Testers : MonoBehaviour {
 
     public bool testCompareFunc = false;
     public bool testCardType = false;
     public bool testCardTypeComp = false;
+    public bool testTimer = false;
 
 	// Use this for initialization
 	void Start () {
@@ -21,6 +23,10 @@ public class Testers : MonoBehaviour {
         if(testCardTypeComp)
         {
             TestCardTypeCompare();
+        }
+        if(testTimer)
+        {
+            TestTimer();
         }
 	}
 
@@ -417,5 +423,28 @@ public class Testers : MonoBehaviour {
         }
 
         Debug.Log("所有测试用例都用过");
+    }
+
+    private void TestTimer()
+    {
+        Timer.GetInstance().AddTimer(2.0f, (param) =>
+        {
+            Debug.Log("Timer1 worked OKKK");
+        });
+
+        Timer.GetInstance().AddTimer(2.0f, (param) =>
+        {
+            Debug.Log("Timer2 worked OKKK");
+        }, 4.0f);
+
+        Timer.GetInstance().AddTimer(2.0f, 2, (param) =>
+        {
+            Debug.Log("Timer3 worked OKKK");
+        }, 2.0f);
+
+        Timer.GetInstance().AddTimer(2.0f, 6.0f, (param) =>
+        {
+            Debug.Log("Timer4 worked OKKK");
+        }, 6.0f);
     }
 }

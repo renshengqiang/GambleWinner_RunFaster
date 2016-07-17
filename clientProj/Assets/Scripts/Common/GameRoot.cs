@@ -36,9 +36,11 @@ namespace Common
         private void InitSingletons()
         {
             AddSingleton<ResourceManager>();
+            AddSingleton<EventDispatcher>();
             AddSingleton<Timer>();
             AddSingleton<SpriteManager>();
-            //AddSingleton<MessageDispatcher>();
+            AddSingleton<GameManager.SceneManager>();
+            EventDispatcher.GetInstance().DispatchMessage(EventDispatcher.START_EVENT);
         }
 
         public static T AddSingleton<T>() where T : Singleton<T>
