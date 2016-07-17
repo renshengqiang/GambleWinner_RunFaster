@@ -23,7 +23,7 @@ namespace GameManager
 
         private void OnGameModuleInitialized(uint iEventType, object kParam)
         {
-            Application.LoadLevel(TEST_SCENE);
+            Application.LoadLevel(BATTLE_SCENE);
         }
     }
 }

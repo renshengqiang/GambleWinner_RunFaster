@@ -40,6 +40,8 @@ namespace Common
             AddSingleton<Timer>();
             AddSingleton<SpriteManager>();
             AddSingleton<GameManager.SceneManager>();
+            AddSingleton<GameObjectPool>();
+
             EventDispatcher.GetInstance().DispatchMessage(EventDispatcher.START_EVENT);
         }
 

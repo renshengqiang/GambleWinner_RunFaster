@@ -51,6 +51,12 @@ namespace Common
                 return null;
             }
         }
+
+        public Sprite GetPokeBackSprite()
+        {
+            // todo: get one sprite resources and modify it
+            return null;
+        }
     }
 }
 
