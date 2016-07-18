@@ -1,4 +1,5 @@
 clientProj/Library/*
+clientProj/Assets/UnityVS/*
 clientProj/Temp/*
 clientProj/*.csproj
 clientProj/*.sln

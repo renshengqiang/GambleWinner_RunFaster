@@ -42,7 +42,7 @@ namespace Common
             AddSingleton<GameManager.SceneManager>();
             AddSingleton<GameObjectPool>();
 
-            EventDispatcher.GetInstance().DispatchMessage(EventDispatcher.START_EVENT);
+            EventDispatcher.GetInstance().DispatchMessage(this, "GameRoot.Initialized");
         }
 
         public static T AddSingleton<T>() where T : Singleton<T>

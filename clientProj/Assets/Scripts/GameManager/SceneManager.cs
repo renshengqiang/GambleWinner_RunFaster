@@ -13,15 +13,15 @@ namespace GameManager
 
         public override void Init()
         {
-            EventDispatcher.GetInstance().RegisterEventHandler((uint)GameEventType.MODULE_INITLIZED, OnGameModuleInitialized);
+            EventDispatcher.GetInstance().RegisterEventHandler("GameRoot.Initialized", OnGameModuleInitialized);
         }
 
         public override void Release()
         {
-            EventDispatcher.GetInstance().UnRegisterEventHandler((uint)GameEventType.MODULE_INITLIZED, OnGameModuleInitialized);
+            EventDispatcher.GetInstance().UnRegisterEventHandler("GameRoot.Initialized", OnGameModuleInitialized);
         }
 
-        private void OnGameModuleInitialized(uint iEventType, object kParam)
+        private void OnGameModuleInitialized(System.Object sender, int eventType, params System.Object[] param)
         {
             Application.LoadLevel(BATTLE_SCENE);
         }
