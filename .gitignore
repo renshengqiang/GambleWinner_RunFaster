@@ -1,6 +1,9 @@
 clientProj/Library/*
+clientProj/Assets/UnityVS*
+clientProj/Assets/UnityVS.*
 clientProj/Assets/UnityVS/*
 clientProj/Temp/*
+clientProj/obj/*
 clientProj/*.csproj
 clientProj/*.sln
 clientProj/*.userprefs
