@@ -41,8 +41,6 @@ namespace Common.Network
     {
         public event Action<NetWorkState>   NetWorkStateChangedEvent;
 
-        private NetWorkState                networkState = NetWorkState.CLOSED;        // current network state
-        private int                         timeoutMSec = 8000;                        // connect timeout count in millisecond
         private EventManager                eventMgr;
         private Connection                  netConn;
         private Coder                       coder;
@@ -56,7 +54,6 @@ namespace Common.Network
 
         public override void Release()
         {
-            networkState = NetWorkState.CLOSED;
             eventMgr.Dispose();
             netConn.Dispose();
         }
@@ -64,7 +61,7 @@ namespace Common.Network
         public void Connect(string url, int port)
         {
             netConn.Connect(url, port);
-            NetWorkStateChanged(NetWorkState.CONNECTING);
+            OnStateChange(NetWorkState.CONNECTING);
         }
         
         public void AddMsgCallback(uint msgId, Action<object> callback)
@@ -79,12 +76,12 @@ namespace Common.Network
 
         public void OnConnected()
         {
-            NetWorkStateChanged(NetWorkState.CONNECTED);
+            OnStateChange(NetWorkState.CONNECTED);
         }
 
         public void OnClose()
         {
-            NetWorkStateChanged(NetWorkState.CLOSED);
+            OnStateChange(NetWorkState.CLOSED);
         }
 
         public void OnMessage(Message msg)
@@ -97,25 +94,20 @@ namespace Common.Network
 
         public void OnTimeOut()
         {
-            NetWorkStateChanged(NetWorkState.TIMEOUT);
+            OnStateChange(NetWorkState.TIMEOUT);
+        }
+
+        public void OnStateChange(NetWorkState newState)
+        {
+            if (NetWorkStateChangedEvent != null)
+            {
+                NetWorkStateChangedEvent(newState);
+            }
         }
 
         public void OnError(string error)
         {
-            NetWorkStateChanged(NetWorkState.ERROR);
-        }
-
-        private void NetWorkStateChanged(NetWorkState newState)
-        {
-            if(networkState != newState)
-            {
-                networkState = newState;
-
-                if (NetWorkStateChangedEvent != null)
-                {
-                    NetWorkStateChangedEvent(newState);
-                }
-            }
+            OnStateChange(NetWorkState.ERROR);
         }
 
         private void ProcessMessage(uint id, object msg)
