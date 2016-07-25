@@ -8,7 +8,7 @@ namespace Common.Network
             return null;
         }
 
-        public Message Decode(Buffer buffer)
+        public Message Decode(byte[] buffer)
         {
             Message msg = new Message();
 

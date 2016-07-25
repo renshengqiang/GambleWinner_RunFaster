@@ -1,33 +1,7 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Collections;
 
 namespace Common.Network
 {
-    /// <summary>
-    /// network state enum
-    /// </summary>
-    public enum NetWorkState
-    {
-        [Description("initial state")]
-        CLOSED,
-
-        [Description("connecting server")]
-        CONNECTING,
-
-        [Description("server connected")]
-        CONNECTED,
-
-        [Description("disconnected with server")]
-        DISCONNECTED,
-
-        [Description("connect timeout")]
-        TIMEOUT,
-
-        [Description("network error")]
-        ERROR
-    }
-
     /// <summary>
     /// network message
     /// </summary>
@@ -39,7 +13,7 @@ namespace Common.Network
 
     public class NetworkManager : Singleton<NetworkManager>, IConnectionListener
     {
-        public event Action<NetWorkState>   NetWorkStateChangedEvent;
+        public event Action<ConnectionState>   NetWorkStateChangedEvent;
 
         private EventManager                eventMgr;
         private Connection                  netConn;
@@ -49,7 +23,7 @@ namespace Common.Network
         {
             eventMgr = new EventManager();
             coder = new Coder();
-            netConn = new Connection(this, coder);
+            netConn = new Connection(this);
         }
 
         public override void Release()
@@ -61,7 +35,7 @@ namespace Common.Network
         public void Connect(string url, int port)
         {
             netConn.Connect(url, port);
-            OnStateChange(NetWorkState.CONNECTING);
+            OnStateChange(ConnectionState.CONNECTING);
         }
         
         public void AddMsgCallback(uint msgId, Action<object> callback)
@@ -71,33 +45,39 @@ namespace Common.Network
 
         public void Send<T>(uint msgId, T msg)
         {
-            netConn.Send<T>(msgId, msg);
+            byte[] arr = coder.Encode<T>(msgId, msg);
+            netConn.Send(arr);
         }
 
         public void OnConnected()
         {
-            OnStateChange(NetWorkState.CONNECTED);
+            OnStateChange(ConnectionState.CONNECTED);
         }
 
         public void OnClose()
         {
-            OnStateChange(NetWorkState.CLOSED);
+            OnStateChange(ConnectionState.CLOSED);
         }
 
-        public void OnMessage(Message msg)
+        public void OnMessage()
         {
-            if(msg != null)
+            byte[] data = null;
+            if(netConn.ReadData(out data))
             {
-                ProcessMessage(msg.id, msg.msg);
+                Message msg = coder.Decode(data);
+                if (msg != null)
+                {
+                    ProcessMessage(msg.id, msg.msg);
+                }
             }
         }
 
         public void OnTimeOut()
         {
-            OnStateChange(NetWorkState.TIMEOUT);
+            OnStateChange(ConnectionState.TIMEOUT);
         }
 
-        public void OnStateChange(NetWorkState newState)
+        public void OnStateChange(ConnectionState newState)
         {
             if (NetWorkStateChangedEvent != null)
             {
@@ -107,7 +87,7 @@ namespace Common.Network
 
         public void OnError(string error)
         {
-            OnStateChange(NetWorkState.ERROR);
+            OnStateChange(ConnectionState.ERROR);
         }
 
         private void ProcessMessage(uint id, object msg)

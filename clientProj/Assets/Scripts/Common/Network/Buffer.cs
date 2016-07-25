@@ -1,7 +1,7 @@
 using System;
 using System.Text;
 
-namespace Common
+namespace Common.Network
 {
 	public class Buffer
 	{
@@ -125,7 +125,49 @@ namespace Common
 		}
 
         /// <summary>
-        /// Read one byte value from buffer at the write index and move the index
+        /// Get one int from the net endian buffer at the reader index and move the index
+        /// </summary>
+        /// <returns></returns>
+        public int GetNetEndianInt()
+        {
+            int ret = 0;
+            if (readerIndex + 3 < writerIndex)
+            {
+                ret = NetworkEndianUtil.ConvertIntFromBytes(GetRaw(), ReaderIndex());
+            }
+            return 0;
+        }
+
+        /// <summary>
+        /// Read one short from the net endian buffer at the reader index and move the index
+        /// </summary>
+        /// <returns></returns>
+        public short GetNetEndianShort()
+        {
+            short ret = 0;
+            if (readerIndex + 1 < writerIndex)
+            {
+                ret = NetworkEndianUtil.ConvertShortFromBytes(GetRaw(), ReaderIndex());
+            }
+            return 0;
+        }
+
+        /// <summary>
+        /// Read one long from the net endian buffer at the reader index and move the index
+        /// </summary>
+        /// <returns></returns>
+        public int GetNetEndianLong()
+        {
+            long ret = 0;
+            if (readerIndex + 7 < writerIndex)
+            {
+                ret = NetworkEndianUtil.ConvertLongFromBytes(GetRaw(), ReaderIndex());
+            }
+            return 0;
+        }
+
+        /// <summary>
+        /// Read one byte value from buffer at the reader index and move the index
         /// </summary>
         /// <returns></returns>
         public byte ReadByte()
@@ -139,7 +181,7 @@ namespace Common
         }
 
         /// <summary>
-        /// Read one int value from buffer at the write index and move the index
+        /// Read one int value from buffer at the reader index and move the index
         /// </summary>
         /// <returns></returns>
         public int ReadInt()
@@ -173,7 +215,66 @@ namespace Common
             }
             return 0;
         }
-		
+
+        /// <summary>
+        /// Read one int from the net endian buffer at the reader index and move the index
+        /// </summary>
+        /// <returns></returns>
+        public int ReadNetEndianInt()
+        {
+            int ret = 0;
+            if (readerIndex + 3 < writerIndex)
+            {
+                ret = NetworkEndianUtil.ConvertIntFromBytes(GetRaw(), ReaderIndex());
+                readerIndex += 4;
+            }
+            return 0;
+        }
+
+        /// <summary>
+        /// Read one short from the net endian buffer at the reader index and move the index
+        /// </summary>
+        /// <returns></returns>
+        public short ReadNetEndianShort()
+        {
+            short ret = 0;
+            if (readerIndex + 1 < writerIndex)
+            {
+                ret = NetworkEndianUtil.ConvertShortFromBytes(GetRaw(), ReaderIndex());
+                readerIndex += 2;
+            }
+            return 0;
+        }
+
+        /// <summary>
+        /// Read one long from the net endian buffer at the reader index and move the index
+        /// </summary>
+        /// <returns></returns>
+        public int ReadNetEndianLong()
+        {
+            long ret = 0;
+            if (readerIndex + 7 < writerIndex)
+            {
+                ret = NetworkEndianUtil.ConvertLongFromBytes(GetRaw(), ReaderIndex());
+                readerIndex += 8;
+            }
+            return 0;
+        }
+
+        /// <summary>
+        /// read byte array data from buffer at
+        /// </summary>
+        /// <param name="length"></param>
+        /// <param name="offset"></param>
+        /// <returns></returns>
+        public byte[] ReadByteArray(int length)
+        {
+            byte[] outArray = new byte[length];
+            Array.Copy(GetRaw(), outArray, length);
+            readerIndex += length;
+            return outArray;
+        }
+
         /// <summary>
         /// Get the read index of the buffer
         /// </summary>

@@ -1,29 +1,53 @@
 ﻿using System;
 using System.Net.Sockets;
 using System.Threading;
+using System.ComponentModel;
 
 namespace Common.Network
 {
-    public interface IConnectionListener
+    /// <summary>
+    /// connection state enum
+    /// </summary>
+    public enum ConnectionState
     {
-        void OnConnected();
-        void OnClose();
-        void OnMessage(Message msg);
-        void OnError(string error);
-        void OnTimeOut();
-        void OnStateChange(NetWorkState state);
-    }
+        [Description("initial state")]
+        CLOSED,
 
+        [Description("connecting server")]
+        CONNECTING,
+
+        [Description("server connected")]
+        CONNECTED,
+
+        [Description("disconnected with server")]
+        DISCONNECTED,
+
+        [Description("connect timeout")]
+        TIMEOUT,
+
+        [Description("network error")]
+        ERROR
+    }
     public enum ConnReadState
     {
         READ_HEAD = 1,
         READ_BODY
     }
 
+    public interface IConnectionListener
+    {
+        void OnConnected();
+        void OnClose();
+        void OnMessage();
+        void OnError(string error);
+        void OnTimeOut();
+        void OnStateChange(ConnectionState state);
+    }
+
+    
     public class Connection : IDisposable
     {
         private Socket              socket;         // the underlying socket
-        private Coder               coder;          // coder to decode buffer
         private IConnectionListener listener;       // listener
         private Buffer              buffer;         // the underlying buffer to receive network message
         private string              url;            // remote url
@@ -32,14 +56,12 @@ namespace Common.Network
         private ConnReadState       readState;      // read state(reading head or body)
         private ManualResetEvent    timeoutEvent;   // check timeout use
         private int                 timeoutMSec;    // connect timeout count in millisecond
-        private NetWorkState        networkState;   // current network state
+        private ConnectionState     networkState;   // current network state
+        private Buffer              sendBuffer;     // send buffer
 
-
-
-        public Connection(IConnectionListener listener, Coder coder)
+        public Connection(IConnectionListener listener)
         {
             this.listener = listener;
-            this.coder = coder;
             socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             socket.NoDelay = true;
             socket.LingerState = new LingerOption(false, 0);
@@ -48,7 +70,8 @@ namespace Common.Network
             readState = ConnReadState.READ_HEAD;
             timeoutEvent = new ManualResetEvent(true);
             timeoutMSec = 8000;
-            networkState = NetWorkState.CLOSED;
+            networkState = ConnectionState.CLOSED;
+            sendBuffer = new Buffer(4096);
         }
 
         public void Connect(string url, int port)
@@ -57,12 +80,12 @@ namespace Common.Network
             this.url = url;
             this.port = port;
             readState = ConnReadState.READ_HEAD;
-            NetworkStateChanged(NetWorkState.CONNECTING);
+            NetworkStateChanged(ConnectionState.CONNECTING);
             if (timeoutEvent.WaitOne(timeoutMSec, false))
             {
-                if (networkState != NetWorkState.CONNECTED && networkState != NetWorkState.ERROR)
+                if (networkState != ConnectionState.CONNECTED && networkState != ConnectionState.ERROR)
                 {
-                    NetworkStateChanged(NetWorkState.TIMEOUT);
+                    NetworkStateChanged(ConnectionState.TIMEOUT);
                     Dispose();
                 }
             }
@@ -76,7 +99,7 @@ namespace Common.Network
                 {
                     socket.Shutdown(SocketShutdown.Both);
                     socket.Close();
-                    NetworkStateChanged(NetWorkState.CLOSED);                    
+                    NetworkStateChanged(ConnectionState.CLOSED);                    
                 }
             }
             catch (Exception e)
@@ -85,17 +108,41 @@ namespace Common.Network
             }
         }
 
-        public IAsyncResult Send<T>(uint msgId, T msg)
+        public bool ReadData(out byte[] outBuffer)
         {
-            byte[] msgBuf = coder.Encode<T>(msgId, msg);
+            if(readState == ConnReadState.READ_HEAD &&
+               this.buffer.ReadableBytes() >= 4 + buffer.GetNetEndianInt())
+            {
+                int length = buffer.ReadNetEndianInt();
+                outBuffer = buffer.ReadByteArray(length);
+                return true;
+            }
+            else
+            {
+                outBuffer = null;
+                return false;
+            }
+        }
+
+        public IAsyncResult Send(byte[] data, int offset = 0, int length = -1)
+        {
+            if(length == -1)
+            {
+                length = data.Length;
+            }
+            byte[] headArr = NetworkEndianUtil.ConvertToBytes(length);
+
+            sendBuffer.Clear();
+            sendBuffer.WriteInt(length);
+            sendBuffer.WriteBytes(data, offset, length);
             try
             {
-                IAsyncResult asyncSend = socket.BeginSend(msgBuf, 0, msgBuf.Length, SocketFlags.None, Sended, msgBuf);
+                IAsyncResult asyncSend = socket.BeginSend(sendBuffer.GetRaw(), 0, sendBuffer.ReadableBytes(), SocketFlags.None, Sended, sendBuffer);
                 return asyncSend;
             }
             catch (Exception e)
             {
-                NetworkStateChanged(NetWorkState.ERROR);
+                NetworkStateChanged(ConnectionState.ERROR);
                 listener.OnError(e.StackTrace + e.Message);
                 return null;
             }
@@ -115,14 +162,14 @@ namespace Common.Network
                 {
                     listener.OnConnected();
                 }
-                NetworkStateChanged(NetWorkState.CONNECTED);
+                NetworkStateChanged(ConnectionState.CONNECTED);
                 Thread thread = new Thread(new ThreadStart(ReceiveData));
                 thread.IsBackground = true;
                 thread.Start();
             }
             else
             {
-                NetworkStateChanged(NetWorkState.DISCONNECTED);
+                NetworkStateChanged(ConnectionState.DISCONNECTED);
             }
         }
 
@@ -142,16 +189,15 @@ namespace Common.Network
                             buffer.WriteBytes(tempBuffer);
 
                             if (readState == ConnReadState.READ_HEAD &&
-                                buffer.ReadableBytes() >= coder.HeadLength())
+                                buffer.ReadableBytes() >= 4)
                             {
                                 readState = ConnReadState.READ_BODY;
                             }
 
                             if (readState == ConnReadState.READ_BODY &&
-                                buffer.ReadableBytes() >= coder.HeadLength() + coder.GetBodyLengh(buffer, buffer.ReaderIndex()))
+                                buffer.ReadableBytes() >= 4 + buffer.GetNetEndianInt())
                             {
-                                Message msg = coder.Decode(buffer);
-                                listener.OnMessage(msg);
+                                listener.OnMessage();
                                 readState = ConnReadState.READ_HEAD;
                             }
                         }
@@ -164,7 +210,7 @@ namespace Common.Network
                     {
                         Logger.Error(string.Format("Receive message from socket error:{0}", e.ToString()));
                         listener.OnError(e.StackTrace + e.Message);
-                        NetworkStateChanged(NetWorkState.ERROR);
+                        NetworkStateChanged(ConnectionState.ERROR);
                     }
 
                     listener.OnClose();
@@ -176,11 +222,11 @@ namespace Common.Network
         {
             if(ar.IsCompleted)
             {
-                byte[] bb = (byte[])ar.AsyncState;
+                Buffer bb = (Buffer)ar.AsyncState;
                 int sentLen = socket.EndSend(ar);
-                if(sentLen != bb.Length)
+                if(sentLen != bb.ReadableBytes())
                 {
-                    Logger.Error(string.Format("Send data error, sent {0}/required: {1}", sentLen, bb.Length));
+                    Logger.Error(string.Format("Send data error, sent {0}/required: {1}", sentLen, bb.ReadableBytes()));
                 }
             }
             else
@@ -189,7 +235,7 @@ namespace Common.Network
             }
         }
 
-        private void NetworkStateChanged(NetWorkState newState)
+        private void NetworkStateChanged(ConnectionState newState)
         {
             if(newState != networkState)
             {
