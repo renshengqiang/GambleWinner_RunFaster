@@ -111,9 +111,9 @@ namespace Common.Network
         public bool ReadData(out byte[] outBuffer)
         {
             if(readState == ConnReadState.READ_HEAD &&
-               this.buffer.ReadableBytes() >= 4 + buffer.GetNetEndianInt())
+               this.buffer.ReadableBytes() >= 4 + buffer.GetInt(buffer.ReaderIndex()))
             {
-                int length = buffer.ReadNetEndianInt();
+                int length = buffer.ReadInt();
                 outBuffer = buffer.ReadByteArray(length);
                 return true;
             }
@@ -194,7 +194,7 @@ namespace Common.Network
                             }
 
                             if (readState == ConnReadState.READ_BODY &&
-                                buffer.ReadableBytes() >= 4 + buffer.GetNetEndianInt())
+                                buffer.ReadableBytes() >= 4 + buffer.GetInt(buffer.ReaderIndex()))
                             {
                                 listener.OnMessage();
                                 readState = ConnReadState.READ_HEAD;
