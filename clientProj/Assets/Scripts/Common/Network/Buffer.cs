@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using System.Text;
 
 namespace Common.Network
@@ -95,15 +96,15 @@ namespace Common.Network
         /// <returns></returns>
 		public 	int GetInt(int index)
 		{
+            int ret = 0;
 			if (index + 3 < len)
 			{
-				int ret = ((int) data[index]) << 24;
+				ret = ((int) data[index]) << 24;
 				ret |= ((int) data[index + 1]) << 16;
 				ret |= ((int) data[index + 2]) << 8;
 				ret |= ((int) data[index + 3]);
-				return ret;
 			}
-			return 0;
+			return ret;
 		}
 
         /// <summary>
@@ -114,14 +115,14 @@ namespace Common.Network
         /// <returns></returns>
 		public short GetShort(int index)
 		{
+            short ret = 0;
 			if (index + 1 < len)
 			{
 				short r1 = (short)(data[index] << 8);
 				short r2 = (short)(data[index + 1]);
-				short ret = (short)(r1 | r2);
-				return ret;
+				ret = (short)(r1 | r2);
 			}
-			return 0;
+			return ret;
 		}
 
         /// <summary>
@@ -135,7 +136,7 @@ namespace Common.Network
             {
                 ret = NetworkEndianUtil.ConvertIntFromBytes(GetRaw(), ReaderIndex());
             }
-            return 0;
+            return ret;
         }
 
         /// <summary>
@@ -149,21 +150,21 @@ namespace Common.Network
             {
                 ret = NetworkEndianUtil.ConvertShortFromBytes(GetRaw(), ReaderIndex());
             }
-            return 0;
+            return ret;
         }
 
         /// <summary>
         /// Read one long from the net endian buffer at the reader index and move the index
         /// </summary>
         /// <returns></returns>
-        public int GetNetEndianLong()
+        public long GetNetEndianLong()
         {
             long ret = 0;
             if (readerIndex + 7 < writerIndex)
             {
                 ret = NetworkEndianUtil.ConvertLongFromBytes(GetRaw(), ReaderIndex());
             }
-            return 0;
+            return ret;
         }
 
         /// <summary>
@@ -172,12 +173,12 @@ namespace Common.Network
         /// <returns></returns>
         public byte ReadByte()
         {
+            byte ret = 0;
             if (readerIndex < writerIndex)
             {
-                byte ret = data[readerIndex++];
-                return ret;
+                ret = data[readerIndex++];
             }
-            return (byte)0;
+            return ret;
         }
 
         /// <summary>
@@ -186,18 +187,18 @@ namespace Common.Network
         /// <returns></returns>
         public int ReadInt()
         {
+            int ret = 0;
             if (readerIndex + 3 < writerIndex)
             {
                 unchecked
                 {
-                    int ret = (int)(((data[readerIndex++]) << 24) & 0xff000000);
+                    ret = (int)(((data[readerIndex++]) << 24) & 0xff000000);
                     ret |= (((data[readerIndex++]) << 16) & 0x00ff0000);
                     ret |= (((data[readerIndex++]) << 8) & 0x0000ff00);
                     ret |= (((data[readerIndex++])) & 0x000000ff);
-                    return ret;
                 }
             }
-            return 0;
+            return ret;
         }
 
         /// <summary>
@@ -206,14 +207,15 @@ namespace Common.Network
         /// <returns></returns>
         public short ReadShort()
         {
+            short ret = 0;
             if (readerIndex + 1 < writerIndex)
             {
                 int h = data[readerIndex++];
                 int l = data[readerIndex++] & 0x000000ff;
                 int len = ((h << 8) & 0x0000ff00) | (l);
-                return (short)len;
+                ret = (short)len;
             }
-            return 0;
+            return ret;
         }
 
         /// <summary>
@@ -228,7 +230,7 @@ namespace Common.Network
                 ret = NetworkEndianUtil.ConvertIntFromBytes(GetRaw(), ReaderIndex());
                 readerIndex += 4;
             }
-            return 0;
+            return ret;
         }
 
         /// <summary>
@@ -243,14 +245,14 @@ namespace Common.Network
                 ret = NetworkEndianUtil.ConvertShortFromBytes(GetRaw(), ReaderIndex());
                 readerIndex += 2;
             }
-            return 0;
+            return ret;
         }
 
         /// <summary>
         /// Read one long from the net endian buffer at the reader index and move the index
         /// </summary>
         /// <returns></returns>
-        public int ReadNetEndianLong()
+        public long ReadNetEndianLong()
         {
             long ret = 0;
             if (readerIndex + 7 < writerIndex)
@@ -258,7 +260,7 @@ namespace Common.Network
                 ret = NetworkEndianUtil.ConvertLongFromBytes(GetRaw(), ReaderIndex());
                 readerIndex += 8;
             }
-            return 0;
+            return ret;
         }
 
         /// <summary>

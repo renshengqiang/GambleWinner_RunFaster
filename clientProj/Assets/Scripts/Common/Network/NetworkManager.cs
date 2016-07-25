@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Common.Network
 {
@@ -13,23 +14,29 @@ namespace Common.Network
 
     public class NetworkManager : Singleton<NetworkManager>, IConnectionListener
     {
-        public event Action<ConnectionState>   NetWorkStateChangedEvent;
+        public event Action<ConnectionState>    NetWorkStateChangedEvent;
 
-        private EventManager                eventMgr;
-        private Connection                  netConn;
-        private Coder                       coder;
+        private EventManager                    eventMgr;
+        private Connection                      netConn;
+        private Coder                           coder;
+        private List<Message>                   lstMessage;
+        private List<ConnectionState>           lstChangedState;
 
         public override void Init()
         {
             eventMgr = new EventManager();
             coder = new Coder();
             netConn = new Connection(this);
+            lstMessage = new List<Message>();
+            lstChangedState = new List<ConnectionState>();
         }
 
         public override void Release()
         {
             eventMgr.Dispose();
             netConn.Dispose();
+            lstMessage.Clear();
+            lstChangedState.Clear();
         }
 
         public void Connect(string url, int port)
@@ -65,10 +72,7 @@ namespace Common.Network
             if(netConn.ReadData(out data))
             {
                 Message msg = coder.Decode(data);
-                if (msg != null)
-                {
-                    ProcessMessage(msg.id, msg.msg);
-                }
+                lstMessage.Add(msg);
             }
         }
 
@@ -79,10 +83,7 @@ namespace Common.Network
 
         public void OnStateChange(ConnectionState newState)
         {
-            if (NetWorkStateChangedEvent != null)
-            {
-                NetWorkStateChangedEvent(newState);
-            }
+            lstChangedState.Add(newState);
         }
 
         public void OnError(string error)
@@ -90,9 +91,26 @@ namespace Common.Network
             OnStateChange(ConnectionState.ERROR);
         }
 
-        private void ProcessMessage(uint id, object msg)
+        /// <summary>
+        /// use update to invoke callback
+        /// prevent network thread to invoke callback directly
+        /// </summary>
+        public void Update()
         {
-            eventMgr.InvokeCallback(id, msg);
+            if(NetWorkStateChangedEvent != null)
+            {
+                for (int i = 0; i < lstChangedState.Count; ++i)
+                {
+                    NetWorkStateChangedEvent(lstChangedState[i]);
+                }
+            }
+            lstChangedState.Clear();
+
+            for(int i=0; i<lstMessage.Count; ++i)
+            {
+                eventMgr.InvokeCallback(lstMessage[i].id, lstMessage[i].msg);
+            }
+            lstMessage.Clear();
         }
     }
 }

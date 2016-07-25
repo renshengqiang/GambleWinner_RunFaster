@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Common.Network;
 
 namespace Common
 {
@@ -41,6 +42,7 @@ namespace Common
             AddSingleton<SpriteManager>();
             AddSingleton<GameManager.SceneManager>();
             AddSingleton<GameObjectPool>();
+            AddSingleton<NetworkManager>();
 
             EventDispatcher.GetInstance().DispatchMessage(this, "GameRoot.Initialized");
         }

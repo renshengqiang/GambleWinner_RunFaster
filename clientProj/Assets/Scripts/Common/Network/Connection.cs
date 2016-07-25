@@ -130,7 +130,6 @@ namespace Common.Network
             {
                 length = data.Length;
             }
-            byte[] headArr = NetworkEndianUtil.ConvertToBytes(length);
 
             sendBuffer.Clear();
             sendBuffer.WriteInt(length);
