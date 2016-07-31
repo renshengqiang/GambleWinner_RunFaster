@@ -1,15 +1,19 @@
-#ifndef NET_MGR_H_
-#define NET_MGR_H_
+#ifndef NETWORK_NET_MGR_H_
+#define NETWORK_NET_MGR_H_
+
 namespace network 
 {
 
 	class NetMgr
 	{
 	public:
-		 NetMgr();
-		~ NetMgr();
+		static NetMgr global_net_mgr;
+	public:
+		 NetMgr() {}
+		~ NetMgr() {}
 		
 	};
 
 }
-#endif //NET_MGR_H_
+
+#endif //NETWORK_NET_MGR_H_

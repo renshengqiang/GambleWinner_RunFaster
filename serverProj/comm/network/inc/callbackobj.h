@@ -5,16 +5,17 @@ namespace network {
 
 enum EventCode_t
 {
-
-	
+	EVENT_NET_CONNECT,
+	EVENT_NET_DISCONNECT,
+	EVENT_NET_READ,
+	EVENT_NET_WROTE,
+	EVENT_NET_ERROR
 };
 
 class Callbackobj
 {
 public:
-	Callbackobj();
-	~Callbackobj();
-	
+	 virtual int HandleEvent(int code, void *data) = 0 ;
 };
 
 }

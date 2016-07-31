@@ -1,9 +1,6 @@
 
-About Server
-=================
-
-##directory##
-
+# About Server
+## directory
 dep:依赖的外部库
 comm: 内部库目录
 mainsvr: 主逻辑srv
