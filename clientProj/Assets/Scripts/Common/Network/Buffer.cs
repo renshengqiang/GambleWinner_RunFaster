@@ -160,7 +160,7 @@ namespace Common.Network
         }
 
         /// <summary>
-        /// Read one short value from buffer at the write index and move the index
+        /// Read one short value from buffer at the reader index and move the index
         /// </summary>
         /// <returns></returns>
         public short ReadShort()
@@ -177,17 +177,24 @@ namespace Common.Network
         }
 
         /// <summary>
-        /// read byte array data from buffer at
+        /// read byte array data from buffer at reader index and move the reader index
         /// </summary>
         /// <param name="length"></param>
-        /// <param name="offset"></param>
         /// <returns></returns>
         public byte[] ReadByteArray(int length)
         {
-            byte[] outArray = new byte[length];
-            Array.Copy(GetRaw(), outArray, length);
-            readerIndex += length;
-            return outArray;
+            if(writerIndex - readerIndex > length)
+            {
+                byte[] outArray = new byte[length];
+                Array.Copy(GetRaw(), readerIndex, outArray, 0, length);
+                readerIndex += length;
+                return outArray;
+            }
+            else
+            {
+                Logger.Error(string.Format("Buffer.ReadByteArray: can't read {0} from buffer", length));
+                return null;
+            }
         }
 
         /// <summary>

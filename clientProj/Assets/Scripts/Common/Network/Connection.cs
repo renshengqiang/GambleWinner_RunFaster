@@ -147,6 +147,16 @@ namespace Common.Network
             }
         }
 
+        public string Url
+        {
+            get { return url; }
+        }
+
+        public int Port
+        {
+            get { return port; }
+        }
+
         public void Dispose()
         {
             Close();
@@ -188,13 +198,13 @@ namespace Common.Network
                             buffer.WriteBytes(tempBuffer);
 
                             if (readState == ConnReadState.READ_HEAD &&
-                                buffer.ReadableBytes() >= 4)
+                                buffer.ReadableBytes() >= sizeof(int))
                             {
                                 readState = ConnReadState.READ_BODY;
                             }
 
                             if (readState == ConnReadState.READ_BODY &&
-                                buffer.ReadableBytes() >= 4 + buffer.GetInt(buffer.ReaderIndex()))
+                                buffer.ReadableBytes() >= sizeof(int) + buffer.GetInt(buffer.ReaderIndex()))
                             {
                                 listener.OnMessage();
                                 readState = ConnReadState.READ_HEAD;

@@ -34,6 +34,7 @@ namespace Common.Network
         public override void Release()
         {
             eventMgr.Dispose();
+            coder.Dispose();
             netConn.Dispose();
             lstMessage.Clear();
             lstChangedState.Clear();
@@ -45,9 +46,10 @@ namespace Common.Network
             OnStateChange(ConnectionState.CONNECTING);
         }
         
-        public void AddMsgCallback(uint msgId, Action<object> callback)
+        public void AddMsgCallback(uint msgId, Type type, Action<object> callback)
         {
             eventMgr.AddCallback(msgId, callback);
+            coder.RegisterMsgId(msgId, type);
         }
 
         public void Send<T>(uint msgId, T msg)
