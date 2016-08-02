@@ -49,7 +49,8 @@ namespace Common.Network
     {
         private Socket              socket;         // the underlying socket
         private IConnectionListener listener;       // listener
-        private Buffer              buffer;         // the underlying buffer to receive network message
+        private Buffer              receiveBuffer;  // the underlying buffer to receive network message
+        private Buffer              sendBuffer;     // send buffer
         private string              url;            // remote url
         private int                 port;           // remote port
         private Buffer              tempBuffer;     // temp buffer to receive network message
@@ -57,7 +58,6 @@ namespace Common.Network
         private ManualResetEvent    timeoutEvent;   // check timeout use
         private int                 timeoutMSec;    // connect timeout count in millisecond
         private ConnectionState     networkState;   // current network state
-        private Buffer              sendBuffer;     // send buffer
 
         public Connection(IConnectionListener listener)
         {
@@ -65,7 +65,7 @@ namespace Common.Network
             socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             socket.NoDelay = true;
             socket.LingerState = new LingerOption(false, 0);
-            buffer = new Buffer(4096);
+            receiveBuffer = new Buffer(4096);
             tempBuffer = new Buffer(4096);
             readState = ConnReadState.READ_HEAD;
             timeoutEvent = new ManualResetEvent(true);
@@ -111,10 +111,10 @@ namespace Common.Network
         public bool ReadData(out byte[] outBuffer)
         {
             if(readState == ConnReadState.READ_HEAD &&
-               this.buffer.ReadableBytes() >= 4 + buffer.GetInt(buffer.ReaderIndex()))
+               this.receiveBuffer.ReadableBytes() >= 4 + receiveBuffer.GetInt(receiveBuffer.ReaderIndex()))
             {
-                int length = buffer.ReadInt();
-                outBuffer = buffer.ReadByteArray(length);
+                int length = receiveBuffer.ReadInt();
+                outBuffer = receiveBuffer.ReadByteArray(length);
                 return true;
             }
             else
@@ -195,16 +195,16 @@ namespace Common.Network
                         int len = socket.Receive(tempBuffer.GetRaw());
                         if (len > 0)
                         {
-                            buffer.WriteBytes(tempBuffer);
+                            receiveBuffer.WriteBytes(tempBuffer);
 
                             if (readState == ConnReadState.READ_HEAD &&
-                                buffer.ReadableBytes() >= sizeof(int))
+                                receiveBuffer.ReadableBytes() >= sizeof(int))
                             {
                                 readState = ConnReadState.READ_BODY;
                             }
 
                             if (readState == ConnReadState.READ_BODY &&
-                                buffer.ReadableBytes() >= sizeof(int) + buffer.GetInt(buffer.ReaderIndex()))
+                                receiveBuffer.ReadableBytes() >= sizeof(int) + receiveBuffer.GetInt(receiveBuffer.ReaderIndex()))
                             {
                                 listener.OnMessage();
                                 readState = ConnReadState.READ_HEAD;

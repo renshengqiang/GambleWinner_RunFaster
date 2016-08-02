@@ -1,0 +1,7 @@
+#This folder contains shared resources both used in client and server project
+
+##Protocol
+
+- Proto: Protobuf definition files
+- Proto2CSharp: tools to generate C# files
+- build.bat: build tool to generate C# files
