@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+
 namespace RunFaster
 {
     public enum PokeColor
@@ -400,7 +401,7 @@ namespace RunFaster
         }
     }
 
-    public class Utils
+    public class Core
     {
         public static System.Random random = null;
         public const int CARDS_NUM = 14;            // 只有14种类型的卡牌

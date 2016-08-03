@@ -70,6 +70,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f04aabe6dc23c174181658b9ab0b860a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  image: {fileID: 11445372}
+  btn: {fileID: 11465132}
 --- !u!114 &11465132
 MonoBehaviour:
   m_ObjectHideFlags: 1

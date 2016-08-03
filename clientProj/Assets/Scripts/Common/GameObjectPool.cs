@@ -24,6 +24,7 @@ namespace Common
             dicPool.TryGetValue(path, out lstGameObjects);
             if(null == lstGameObjects)
             {
+                lstGameObjects = new List<GameObject>();
                 dicPool[path] = lstGameObjects;
             }
 
@@ -67,7 +68,7 @@ namespace Common
                     dicPool[path] = lstGameObjects;
                 }
                 lstGameObjects.Add(go);
-                go.transform.parent = null;
+                go.transform.SetParent(null);
             }
             else
             {

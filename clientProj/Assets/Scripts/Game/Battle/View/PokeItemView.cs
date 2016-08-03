@@ -24,30 +24,39 @@ namespace RunFaster
         void Awake()
         {
             layoutElement = GetComponent<LayoutElement>();
-            zoneView = GetComponentInParent<PokeCardsnZoneView>();
         }
 
+        private PokeCardsnZoneView ZoneView
+        {
+            get
+            {
+                if(zoneView == null)
+                {
+                    zoneView = GetComponentInParent<PokeCardsnZoneView>();
+                }
+                return zoneView;
+            }
+        }
         /// <summary>
         /// 设置扑克牌的数据
         /// </summary>
         /// <param name="index">poke index, 用于和上层的 view 进行交互</param>
         /// <param name="poke">具体显示哪张扑克牌</param>
         /// <param name="showFront">是否显示正面</param>
-        public void SetData(int index, Poke poke, bool showFront = true)
+        /// /// <param name="interactive">是否可交互</param>
+        public void SetData(int index, Poke poke, bool showFront = true, bool interactive = true)
         {
             Sprite sprite = null;
 
             if(showFront)
             {
                 sprite = SpriteManager.GetInstance().GetSprite(poke);
-                btn.interactable = true;
             }
             else
             {
                 sprite = SpriteManager.GetInstance().GetPokeBackSprite();
-                btn.interactable = false;
             }
-
+            btn.interactable = interactive;
             image.sprite = sprite;
 
             this.index = index;
@@ -55,15 +64,15 @@ namespace RunFaster
 
         public void OnClick()
         {
-            if(clickedUp)
+            if(!clickedUp)
             {
-                layoutElement.preferredHeight -= 20;
-                zoneView.OnItemSelected(index);
+                layoutElement.preferredHeight += 20;
+                ZoneView.OnItemSelected(index);
             }
             else
             {
-                layoutElement.preferredHeight += 20;
-                zoneView.OnItemDeselected(index);
+                layoutElement.preferredHeight -= 20;
+                ZoneView.OnItemDeselected(index);
             }
             clickedUp = !clickedUp;
         }
