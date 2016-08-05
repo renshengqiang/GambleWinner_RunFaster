@@ -11,7 +11,6 @@ public class Testers : MonoBehaviour {
     public bool testCardTypeComp = false;
     public bool testTimer = false;
     public bool testCardsView = false;
-    [SerializeField]
     public PokeCardsnZoneView cardsZoneView;
 
 	// Use this for initialization
@@ -38,6 +37,9 @@ public class Testers : MonoBehaviour {
         }
 	}
 
+    /// <summary>
+    /// 扑克牌大小比较，通过排序来确定
+    /// </summary>
     private void TestPokerCompareFunc()
     {
         List<Poke> lstPoker = new List<Poke>();
@@ -56,6 +58,9 @@ public class Testers : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// 扑克牌牌型比较
+    /// </summary>
     private void TestCardType()
     {
         // 单支
@@ -310,6 +315,9 @@ public class Testers : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// 扑克牌牌型比较
+    /// </summary>
     private void TestCardTypeCompare()
     {
         // 相同类型的比较大小
