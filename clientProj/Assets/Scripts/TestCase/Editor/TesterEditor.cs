@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using System.Collections;
+using RunFaster;
 
 [CustomEditor(typeof(Testers))]
 public class TesterEditor : Editor 
@@ -15,7 +16,7 @@ public class TesterEditor : Editor
         tester.testTimer = EditorGUILayout.Toggle("Timer测试", tester.testTimer);
         if (tester.testCardsView = EditorGUILayout.Toggle("测试牌区视图", tester.testCardsView))
         {
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("cardsZoneView"), new GUIContent("发牌区"));
+            tester.cardsZoneView = (PokeCardsnZoneView)EditorGUILayout.ObjectField("发牌区", tester.cardsZoneView, typeof(GameObject));
         }
         EditorGUILayout.EndVertical();
     }
