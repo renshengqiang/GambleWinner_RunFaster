@@ -43,6 +43,7 @@ namespace Common
             AddSingleton<GameManager.SceneManager>();
             AddSingleton<GameObjectPool>();
             AddSingleton<NetworkManager>();
+            AddSingleton<UIManager>();
 
             EventDispatcher.GetInstance().DispatchMessage(this, "GameRoot.Initialized");
         }

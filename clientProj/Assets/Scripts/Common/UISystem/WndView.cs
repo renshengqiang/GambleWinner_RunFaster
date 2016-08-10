@@ -7,7 +7,7 @@ namespace Common
     /// window view logic
     /// when you have a window to be shown and set pariticual widget, you need to implement a WndView
     /// </summary>
-    public class WndView
+    public class WndView : MonoBehaviour
     {
         /// <summary>
         /// Init is called once on a gameobect.
@@ -23,7 +23,7 @@ namespace Common
 		/// </summary>
 		/// <param name="context"></param>
         public virtual void Open(WndContext context)
-		{	
+		{
 		}
 		/// <summary>
 		/// Close is called whenever a window comes to background
@@ -37,7 +37,7 @@ namespace Common
 		/// </summary>
 		/// <param name="context"></param>
 		public virtual void Destory(WndContext context)
-		{	
+		{
 		}
     }
 }
