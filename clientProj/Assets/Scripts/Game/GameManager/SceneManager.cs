@@ -24,6 +24,7 @@ namespace GameManager
         private void OnGameModuleInitialized(System.Object sender, int eventType, params System.Object[] param)
         {
             Application.LoadLevel(TEST_SCENE);
+            UIManager.GetInstance().Open(WndNames.WND1_NAME, "window1");
         }
     }
 }

@@ -1,19 +1,25 @@
-﻿using Common;
+using Common;
+using UnityEngine.UI;
 
 namespace UI
 {
-    public class ExampleView : WndView
+    public class Window2View : WndView
     {
+        public Text txtContent;
+
+        private Window2Context windowContext;
+
         public override void Init(WndContext context)
         {
-            //todo: add your view init work here
-            base.Init(context);
+            windowContext = (Window2Context)context;
         }
 
         public override void Open(WndContext context)
         {
-            //todo: add your code for opening a window here
-            base.Open(context);
+            if(windowContext != null)
+            {
+                txtContent.text = windowContext.GetValue().ToString();
+            }
         }
 
         public override void Close(WndContext context)
@@ -27,6 +33,10 @@ namespace UI
             //todo: add your code for destroy a window here
             base.Destory(context);
         }
+
+        public void OnBtnRtn()
+        {
+            UIManager.GetInstance().CloseTop();
+        }
     }
 }
-

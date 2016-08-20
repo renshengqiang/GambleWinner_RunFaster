@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace Common
 {
-    public class RectTransformUtil
+    public class TransformUtil
     {
         public static void AddChildAsLastSibling(Transform parent, Transform child)
         {
@@ -17,6 +17,12 @@ namespace Common
             {
                 Logger.Error(string.Format("AddChildAsLastSibling error: parent:{0}, child:{1}", parent, child));
             }
+        }
+
+        public static void SetRectTransformStretch(RectTransform trans)
+        {
+            trans.sizeDelta = Vector2.zero;
+            trans.anchoredPosition = Vector2.zero;
         }
     }
 }

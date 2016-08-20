@@ -4,6 +4,7 @@ using RunFaster;
 using Common;
 using System.Collections;
 
+
 public class Testers : MonoBehaviour {
 
     public bool testCompareFunc = false;

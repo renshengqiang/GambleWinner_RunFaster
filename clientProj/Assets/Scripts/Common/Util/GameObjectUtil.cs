@@ -10,7 +10,7 @@ namespace Common
             {
                 Transform parentTrans = parent.transform;
                 Transform childTrans = child.transform;
-                RectTransformUtil.AddChildAsLastSibling(parentTrans, childTrans);
+                TransformUtil.AddChildAsLastSibling(parentTrans, childTrans);
             }
             else
             {
